@@ -1,0 +1,149 @@
+POKÉ SMASH — mode d'emploi
+===========================
+
+Jeu de combat façon Smash Bros Ultimate (même physique, mêmes commandes universelles) avec 10 Pokémon.
+Jeu de fan, pour jouer entre potes uniquement : Pokémon appartient à Nintendo / Game Freak / The Pokémon Company.
+Les portraits officiels sont chargés depuis PokéAPI (connexion Internet nécessaire pour les voir).
+
+
+LANCER LE JEU
+-------------
+Double-clic sur « Lancer le jeu.bat ».
+ - Si Python est installé : un petit serveur démarre (fenêtre réduite, laisse-la ouverte) et le jeu s'ouvre sur http://localhost:8000
+ - Sinon le fichier index.html s'ouvre directement.
+Navigateur conseillé : Chrome ou Edge (plein écran : touche F11).
+
+
+MANETTE PRO EN BLUETOOTH
+------------------------
+1. Windows : Paramètres > Bluetooth et appareils > Ajouter un appareil > Bluetooth.
+2. Sur la manette Pro : maintiens le petit bouton de synchronisation (en haut, à côté de l'USB-C) jusqu'à ce que les LED défilent.
+3. Choisis « Pro Controller » dans la liste.
+4. Dans le jeu, appuie sur un bouton de la manette pour la réveiller (le menu affiche « Manette Pro » en bas).
+Si la manette n'est pas détectée : ferme Steam (il capture la manette Pro) ou désactive dans Steam
+« Paramètres > Manette > Prise en charge de la configuration Nintendo Switch ».
+Les manettes Xbox / PlayStation marchent aussi. Jusqu'à 4 joueurs (3 manettes + le clavier, par exemple).
+
+
+COMMANDES MANETTE PRO (disposition par défaut, modifiable dans Options > Boutons de la manette)
+-------------------------------------------------------------------------------------------
+Stick gauche   se déplacer (incliner = marcher, pousser à fond = courir)
+A              attaque (+ direction = coups forts ; pousser le stick gauche d'un coup + A = smash, maintenir A = charger)
+B              spécial (neutre / côté / haut / bas)
+X / Y / R      sauter (relâcher vite = petit saut) ; stick vers le haut aussi (désactivable dans Options)
+ZR             bouclier ; + direction = roulade / esquive ; en l'air = esquive aérienne
+ZL (et L)      saisie, puis direction = lancer (A = frapper l'adversaire tenu)
+Stick droit    attaque dirigée = direction + A (au sol), aériens (en l'air) — ou « Smash » dans Options
+Croix          provocation
++              pause (en local)
+Options > Boutons de la manette : change l'action de chaque bouton, teste-les en direct,
+ou remets « Ma disposition » / « Disposition Ultimate » (L/R saisie, ZL/ZR bouclier).
+
+Techniques : parry (relâcher le bouclier juste avant un coup), tech (bouclier juste avant de toucher le sol
+en étant éjecté), chute rapide (bas au sommet d'un saut), DI (pousser le stick contre l'éjection pour survivre).
+B-reverse : B puis stick dans l'autre sens aussitôt = le spécial part de l'autre côté (avec un petit élan).
+Demi-tour B : stick légèrement en arrière puis B = le spécial part vers l'arrière (sans changer l'élan).
+Autre demi-tour B : stick en arrière, retour au neutre, puis B dans les 10 frames = le B neutre part vers l'arrière
+(pratique en l'air, où le perso ne se retourne pas tout seul).
+Saisie : on attrape aussi un adversaire en l'air s'il est à portée de la saisie.
+
+Clavier (AZERTY : Z Q S D ; QWERTY : W A S D) : J attaque, K spécial, Espace saut, L bouclier, U saisie,
+O + direction smash, T provocation, Maj pour marcher, Échap pause.
+
+Sélection des persos : A choisir, B annuler, X/Y couleur (chromatique !), − (Moins) ajouter un CPU,
+L/R niveau du CPU (1 à 9), A sur un perso une fois prêt = le donner au CPU, + lancer.
+
+
+LES COMBATTANTS
+---------------
+Chaque Pokémon a SA signature (détail et idées pour les futurs persos : SIGNATURES-PERSOS.md).
+
+Gromago      SURF & FIGURES. Surfe sur sa planche de pièces quand il court. B maintenu = Ruée d'Or.
+             Côté B = Surf'Or : s'il touche, FIGURE ! (il décolle sur la tête de l'adversaire, récupère son surf
+             et son saut => on enchaîne ; 3 figures dans le même saut = JACKPOT). Bas B = Corps en Or (renvoie).
+             Aériens : kickflip (neutre), pièce lancée (avant), planche-batte (arrière), fontaine de pièces (haut),
+             ollie stomp qui rebondit et projette des pièces à l'atterrissage (bas).
+Archéduc     SNIPER PLANEUR. B maintenu = arc (charge max en 0,4 s), vise au stick, tête = CRITIQUE, de loin = plus fort.
+             Côté B = feuilles (0 lag, recharge 1,25 s). Bas B = piège de plumes. Haut B = vol plané :
+             pendant le vol, UN coup au choix (A = aérien, B = spécial, garde l'élan) puis chute libre ; bouclier = lâcher.
+             Aériens : Rafale qui repousse des deux côtés (neutre), aile tranchante qui relance le vol (avant),
+             coup de pied flottant (arrière), Pluie de Flèches : 3 flèches vers le bas (bas).
+             Flèche pleine = finisher après un combo (tue vers 90-150 % selon le poids). Flottement limité :
+             40 frames par saut au total (aériens flottants, Pluie de Flèches, arc chargé en l'air), rechargé au sol.
+Mouscoto     MOUSTIQUE CULTURISTE : aspirer, voler, choper. Maintenir saut = battement d'ailes.
+             B = Vampisuçoir (prise qui draine). Côté B = Prise Colossale. Bas B = Gonflette (contre + boost).
+             Aériens : Tourbillon qui ASPIRE puis claque (neutre), Dard trompe en avant qui draine (avant),
+             coude en super armure (arrière), trompe qui soigne (haut), écrasement + onde de choc (bas).
+Armarouge    CANON & RECUL. B maintenu = Canon Blindé 360° (stockable). L'explosion a toujours la même puissance ;
+             charger fait seulement aller le boulet plus vite et plus loin. Côté B = Lance-Flammes.
+             Aériens au canon : chaque tir le propulse à l'opposé => ils servent à se déplacer.
+             Avant = tir qui le fait reculer, arrière = tir qui le propulse en avant (récupération !),
+             haut = rafale puis plaqué au sol, bas = tir vers le bas qui le fait rebondir. Neutre = dôme psy qui RENVOIE.
+             Bas B = Onde Psy : repousse autour de lui et renvoie les projectiles ; si elle renvoie un projectile ou
+             encaisse un coup (super armure), le canon se recharge à fond et reste stocké (le B suivant tire aussitôt).
+Malvalame    LAMES SPECTRALES À ÉCHO. Ses coupes aériennes laissent une lame fantôme qui re-frappe ~1/4 s plus tard
+             au même endroit (neutre = anneau, avant = X, haut = au-dessus) : pièges et combos.
+             Attaque en courant = Nitrocharge (+vitesse). Estoc Amer (bas en l'air) et Haut B soignent.
+Miascarade   MAGICIENNE. Ses coups « fleur » posent des PÉTALES sur l'adversaire (max 3, visibles autour de lui).
+             Bas B = bombe-fleur collante, rappuie = BOUM (+3,5 % par pétale). Avant + A en l'air = Tour de Fleur :
+             CRITIQUE à 3 pétales. Neutre en l'air = cape qui RETOURNE l'adversaire. Bas en l'air = salto arrière
+             (elle finit retournée). B = feuilles chercheuses (posent des pétales). Côté B = Coup Bas.
+Insécateur / Cizayox   duo façon Pyra/Mythra, bas B pour changer (même en l'air).
+             B = coup chargé façon Donkey Kong : B pour charger (ça continue seul), B pour frapper,
+             bouclier ou saut pour stocker la charge (pleine = stockée automatiquement).
+             Insécateur : Tranche Montante (cisaille qui éjecte vers le haut), Vive-Attaque (côté B, 2 dashs).
+             Cizayox : Pince Titan (gros poing qui éjecte sur le côté), jab Pisto-Poing ultra rapide.
+Meloetta     bas B = Chant Antique : endort puis change de forme.
+             Chant = ONDES : anneau sonore (neutre), note qui ondule (avant), explosion sonore derrière,
+             colonne d'aigus (haut), grosse note basse qui tombe et rebondit (bas).
+             Danse = MOUVEMENT : toupie breakdance, pas chassé qui avance, Corps à Corps, Pirouette, Pied Sauté.
+Obalie       LA BOULE. Il roule au lieu de courir (glisse comme sur la glace, saute avec son élan). Hitbox généreuses.
+             Un peu plus grand qu'avant (plus facile à toucher).
+             Côté B = Roulade : part tout de suite avec de l'élan, au sol comme en l'air. Quand elle touche, il fait un
+             petit bond vers l'adversaire et redevient LIBRE (saut, aérien, esquive...) ; la Roulade est rendue et, relancée
+             dans les 1,5 s, elle repart un niveau plus haut (plus rapide, plus forte). Au niveau max, le coup = STRIKE
+             (ça tue). Contre un bouclier, il rebondit
+             en arrière (punissable). Annulable : saut (garde l'élan), en l'air aérien / esquive / spécial,
+             au sol A = glissade sur le ventre ; B ou bouclier au sol = s'arrêter ; stick arrière = demi-tour.
+             B = Boule de Neige : après avoir appuyé sur B, vise au stick (360°, ligne de visée) ; maintenir B pour
+             la tasser plus grosse ; elle roule au sol en GROSSISSANT
+             (plus elle roule, plus elle fait mal), tombe au bord, une seule à la fois.
+             Bas B = Mâchouille : croque l'adversaire (3 bouchées puis le recrache loin), croque aussi les projectiles
+             (+PV). Recharge de 2 s après une prise (plus de boucle).
+             Haut B = rebond sur une grosse bulle qui éclate : éjecte fort vers le haut (tue vers 145 % à mi-hauteur). Haut + A = salto façon Carapuce (la queue balaie au-dessus).
+             Smash haut = Ballon Givré (boule de glace qui tourne sur son nez puis éclate).
+             Smash bas = Raz-de-Marée (il s'écrase sur le ventre, deux vagues filent au ras du sol).
+             Bas en l'air = plat ventre qui rebondit une fois comme un ballon.
+Évoli        BONUS. Maintiens bas B + direction pour évoluer (haut Voltali, avant Pyroli, bas Noctali,
+             arrière Aquali, neutre Mentali). Chaque évolution a ses propres aériens :
+             Voltali = aiguilles dans 8 directions, éclair sous lui ; Pyroli = roue de feu, pilier de feu à
+             l'atterrissage, Boutefeu (smash avant, 3 % de recul) ; Aquali = se liquéfie (intangible), bulles,
+             geyser ; Mentali = coups à distance, étourdit, Prescience (orbe qui explose plus tard) ;
+             Noctali = poison, super armure, provocation = Clair de Lune (soigne 6 %, 1 fois / 10 s).
+             Chaque vie recommence en Évoli.
+
+
+JOUER EN LIGNE
+--------------
+Menu « En ligne ». L'hôte crée une salle et obtient un code de 4 lettres (+ un lien et un QR code).
+Connexion directe entre joueurs (pair-à-pair) avec netcode rollback, comme les bons jeux de combat.
+
+Deux façons de rejoindre :
+ A) Sans rien héberger : chaque pote a sa copie du dossier (envoie-lui le dossier en .zip), lance le jeu,
+    va dans « En ligne > Rejoindre une salle » et tape le code. IMPORTANT : tout le monde doit avoir
+    exactement la même version des fichiers.
+ B) Avec lien / QR code : mets le dossier en ligne sur un hébergement statique gratuit, par exemple
+    Netlify Drop (glisser le dossier sur https://app.netlify.com/drop) ou GitHub Pages. Ouvre le jeu depuis
+    cette adresse : le lien et le QR code de la salle marchent alors directement pour tes potes.
+Le lien affiché quand tu joues en « localhost » ne marche que sur ton PC ; utilise alors le code (option A).
+Certaines connexions très fermées (4G, réseau d'entreprise) peuvent bloquer la connexion directe.
+
+
+FICHIERS
+--------
+index.html        la page du jeu
+js/sim/           physique, combat, simulation (déterministe, base du netcode)
+js/chars/         un fichier par Pokémon (stats, coups, dessin)
+js/net.js         salles en ligne + rollback
+js/ai.js          bots CPU
+js/ui.js          menus

@@ -1,0 +1,45 @@
+'use strict';
+// Préréglages d'animation (images clés de pose). Purement visuel.
+// Clés de pose : lean (inclinaison °), bob (décalage vertical), sq (écrasement), rot (rotation du corps °),
+// aF/aB bras avant/arrière (0 = bas, 90 = devant, 180 = haut), eF/eB coudes, lF/lB jambes, kF/kB genoux,
+// hd tête, tl queue, wg ailes (0..1), wp arme (°), crouch (0..1), eye (0 normal, 1 énervé, 2 douleur, 3 fermé), glow.
+(function (G) {
+  const m1 = (v) => Math.max(1, v);
+  G.A = {
+    jab: (s, a, e) => [[0, {}], [m1(s - 2), { aF: 10, eF: 70, lean: -2 }], [s, { aF: 95, eF: 0, lean: 8, hd: 4 }], [a + 2, { aF: 92, eF: 6, lean: 7 }], [e, {}]],
+    jab2: (s, a, e) => [[0, {}], [m1(s - 2), { aB: 10, eB: 70, lean: -2 }], [s, { aB: 98, eB: 0, lean: 11, aF: -20 }], [a + 2, { aB: 92, lean: 9 }], [e, {}]],
+    punch: (s, a, e) => [[0, {}], [m1(s - 2), { aF: -35, eF: 85, lean: -7, sq: 0.95 }], [s, { aF: 100, eF: 0, lean: 15, sq: 1.05, eye: 1 }], [a + 4, { aF: 96, lean: 12, eye: 1 }], [e, {}]],
+    kickF: (s, a, e) => [[0, {}], [m1(s - 2), { lF: 35, kF: 85, lean: -8 }], [s, { lF: 98, kF: 0, lean: -16, aF: -25, aB: 45, eye: 1 }], [a + 4, { lF: 92, lean: -13 }], [e, {}]],
+    upSwing: (s, a, e) => [[0, {}], [m1(s - 2), { aF: 40, eF: 30, lean: 5, sq: 0.92 }], [s, { aF: 150, eF: 8, lean: -6, sq: 1.06 }], [a, { aF: 190, lean: -10 }], [e, {}]],
+    headbutt: (s, a, e) => [[0, {}], [m1(s - 2), { lean: -15, hd: -20, sq: 0.9 }], [s, { lean: 5, hd: 25, sq: 1.12, bob: 1.5 }], [a + 3, { lean: 0, hd: 18, sq: 1.08 }], [e, {}]],
+    sweep: (s, a, e) => [[0, { crouch: 1 }], [m1(s - 1), { crouch: 1, lF: 10, lean: 5 }], [s, { crouch: 1, lF: 100, kF: 0, lean: 12 }], [a + 3, { crouch: 1, lF: 92 }], [e, { crouch: 1 }]],
+    lowPoke: (s, a, e) => [[0, { crouch: 1 }], [m1(s - 1), { crouch: 1, aF: 30, lean: 8 }], [s, { crouch: 1, aF: 100, eF: 0, lean: 18 }], [a + 3, { crouch: 1, aF: 95 }], [e, { crouch: 1 }]],
+    dashAtk: (s, a, e) => [[0, { lean: 10 }], [s, { lean: 28, aF: 100, aB: -60, lF: 60, lB: -40, eye: 1 }], [a, { lean: 24, aF: 96 }], [e, {}]],
+    smashF: (c, s, a, e) => [[0, {}], [c, { aF: -85, eF: 40, lean: -15, sq: 0.94, hd: -6, eye: 1 }], [s - 1, { aF: -75, lean: -13, eye: 1 }], [s, { aF: 100, eF: 0, lean: 22, sq: 1.06, eye: 1 }], [a + 5, { aF: 95, lean: 18 }], [e, {}]],
+    smashU: (c, s, a, e) => [[0, {}], [c, { crouch: 0.7, aF: 25, aB: 25, sq: 0.9, eye: 1 }], [s, { aF: 178, aB: 178, lean: -4, sq: 1.12 }], [a + 4, { aF: 172, aB: 172 }], [e, {}]],
+    smashD: (c, s, a, e) => [[0, {}], [c, { crouch: 0.9, aF: 30, aB: -30, eye: 1 }], [s, { crouch: 0.9, aF: 110, aB: -110, lF: 60, lB: -60 }], [a + 6, { crouch: 0.9, aF: 100, aB: -100 }], [e, {}]],
+    nair: (s, a, e) => [[0, { lF: 40, lB: 30, kF: 60, kB: 60 }], [s, { rot: 0, lF: 70, lB: -50, aF: 80, aB: -80 }], [a, { rot: 360, lF: 70, lB: -50, aF: 80, aB: -80 }], [e, { rot: 360 }]],
+    nairStar: (s, a, e) => [[0, {}], [m1(s - 1), { lF: 40, lB: 40, aF: 40, aB: 40, sq: 0.85 }], [s, { lF: 70, lB: -70, aF: 120, aB: -120, sq: 1.1 }], [a, { lF: 60, lB: -60, aF: 110, aB: -110 }], [e, {}]],
+    fair: (s, a, e) => [[0, {}], [m1(s - 1), { aF: -60, aB: -40, lean: -10 }], [s, { aF: 120, aB: 60, lean: 15 }], [a, { aF: 60, lean: 12 }], [e, {}]],
+    fairKick: (s, a, e) => [[0, {}], [m1(s - 1), { lF: 20, kF: 90, lean: -5 }], [s, { lF: 95, kF: 0, lean: -10, eye: 1 }], [a + 2, { lF: 85 }], [e, {}]],
+    bair: (s, a, e) => [[0, {}], [m1(s - 1), { lB: -20, kB: 80, lean: 10 }], [s, { lB: -115, kB: 0, lean: 22, hd: -10, eye: 1 }], [a + 3, { lB: -100 }], [e, {}]],
+    uair: (s, a, e) => [[0, {}], [m1(s - 1), { rot: -40, lF: 20 }], [s, { rot: -200, lF: 120 }], [a, { rot: -300, lF: 100 }], [e, { rot: -360 }]],
+    uairSwipe: (s, a, e) => [[0, {}], [m1(s - 1), { aF: 60, aB: 60 }], [s, { aF: 160, aB: 200 }], [a, { aF: 200, aB: 160 }], [e, {}]],
+    dair: (s, a, e) => [[0, {}], [m1(s - 1), { lF: 40, lB: 40, kF: 90, kB: 90, sq: 0.9 }], [s, { lF: 5, lB: -5, kF: 0, kB: 0, sq: 1.12, eye: 1 }], [a, { lF: 0, lB: 0 }], [e, {}]],
+    dairSwing: (s, a, e) => [[0, {}], [m1(s - 1), { aF: 170, aB: 170, sq: 0.95 }], [s, { aF: 10, aB: 10, sq: 1.08, lean: 10 }], [a + 3, { aF: 0 }], [e, {}]],
+    grab: (s, a, e) => [[0, {}], [s, { aF: 95, aB: 85, eF: 0, eB: 0, lean: 14 }], [a + 6, { aF: 90, aB: 80, lean: 12 }], [e, {}]],
+    pummel: [[0, { aF: 80, aB: 70, eF: 40 }], [3, { aF: 110, eF: 0, lean: 8 }], [9, { aF: 80, eF: 40 }], [16, { aF: 80, aB: 70 }]],
+    throwF: [[0, { aF: 80, aB: 70 }], [8, { aF: 40, aB: 40, lean: -10 }], [11, { aF: 120, aB: 110, lean: 16 }], [30, {}]],
+    throwB: [[0, { aF: 80, aB: 70 }], [8, { rot: -90, aF: 120 }], [16, { rot: -180, aF: 170 }], [26, { rot: -330 }], [36, { rot: -360 }]],
+    throwU: [[0, { aF: 80, aB: 70 }], [10, { aF: 170, aB: 170, sq: 0.92 }], [14, { aF: 180, aB: 180, sq: 1.08 }], [36, {}]],
+    throwD: [[0, { aF: 80, aB: 70 }], [12, { aF: 30, aB: 30, crouch: 0.6 }], [18, { aF: 20, crouch: 0.8, eye: 1 }], [38, {}]],
+    taunt: [[0, {}], [10, { aF: 170, aB: -20, hd: 10, eye: 3 }], [30, { aF: 160, aB: 170, hd: -10, eye: 3 }], [50, { aF: 170, eye: 3 }], [60, {}]],
+    getupAtk: [[0, { rot: -90, crouch: 1 }], [16, { rot: -40, crouch: 0.8 }], [19, { lF: 100, rot: -20 }], [25, { lB: -100, lF: 0 }], [44, {}]],
+    spinArms: (s, a, e) => [[0, {}], [m1(s - 1), { aF: 90, aB: -90 }], [s, { rot: 0, aF: 90, aB: -90 }], [a, { rot: 720, aF: 90, aB: -90 }], [e, { rot: 720 }]],
+    overhead: (c, s, a, e) => [[0, {}], [c, { aF: 200, aB: 200, eF: 20, lean: -12, sq: 0.95, eye: 1 }], [s, { aF: 95, aB: 95, eF: 0, lean: 18, sq: 1.05, eye: 1 }], [a + 6, { aF: 80, aB: 80, lean: 22 }], [e, {}]],
+    point: (s, e) => [[0, {}], [s, { aF: 90, eF: 0, lean: 4 }], [e - 4, { aF: 90 }], [e, {}]],
+    cast: (s, a, e) => [[0, {}], [m1(s - 3), { aF: -30, aB: -30, lean: -8, glow: 1 }], [s, { aF: 95, aB: 85, lean: 10, glow: 1 }], [a + 4, { aF: 90, aB: 80 }], [e, {}]],
+    counter: (e) => [[0, {}], [3, { aF: 60, aB: 120, lean: -8, glow: 1, eye: 1 }], [e - 6, { aF: 60, aB: 120, glow: 0.5 }], [e, {}]],
+    rise: (s, e) => [[0, { crouch: 0.6 }], [s, { aF: 175, aB: 175, sq: 1.1 }], [e, { aF: 170, aB: 170 }]],
+  };
+})(window.G);
