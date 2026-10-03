@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Aperçu perso</title>
+<style>
+  body { background: #2b2b3a; color: #eee; font: 600 13px Rubik, Arial, sans-serif; margin: 16px; }
+  #bar { margin-bottom: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  #grid { display: flex; flex-wrap: wrap; gap: 4px; }
+  .cell { background: #55556a; position: relative; }
+  .cell span { position: absolute; left: 6px; top: 4px; }
+  canvas { display: block; }
+</style>
+</head>
+<body>
+<div id="bar">
+  Perso <select id="ch"></select> Palette <select id="pal"></select>
+  <label><input type="checkbox" id="pause"> pause</label>
+  <label><input type="checkbox" id="hb" checked> hitbox</label>
+</div>
+<div id="grid"></div>
+<script src="../js/util.js"></script>
+<script src="../js/input.js"></script>
+<script src="../js/anim.js"></script>
+<script src="../js/sim/fighter.js"></script>
+<script src="../js/sim/combat.js"></script>
+<script src="../js/sim/moves.js"></script>
+<script src="../js/render/draw.js"></script>
+<script>G.palOf = (f) => { const ch = G.CHARS[f.char]; return ch.palettes[f.pal % ch.palettes.length]; };</script>
+<script src="../js/chars/insecateur.js"></script>
+<script src="../js/chars/minotaupe.js"></script>
+<script src="../js/chars/tung.js"></script>
+<script>
+// Planche d'animation : chaque case joue un état en boucle (outil de dessin, hors jeu).
+const STATES = [
+  ['idle', 'idle'], ['walk', 'walk'], ['run', 'run'], ['air ↑', 'air', { vy: 1 }], ['air ↓', 'air', { vy: -1 }],
+  ['crouch', 'crouch'], ['shield', 'shield'], ['hit', 'hit'], ['ledge', 'ledge'],
+  ['jab', 'move', { move: 'jab' }], ['jab3', 'move', { move: 'jab3' }], ['ftilt', 'move', { move: 'ftilt' }], ['utilt', 'move', { move: 'utilt' }], ['dtilt', 'move', { move: 'dtilt' }],
+  ['fsmash', 'move', { move: 'fsmash' }], ['usmash', 'move', { move: 'usmash' }], ['dsmash', 'move', { move: 'dsmash' }],
+  ['nair', 'move', { move: 'nair' }], ['fair', 'move', { move: 'fair' }], ['bair', 'move', { move: 'bair' }], ['uair', 'move', { move: 'uair' }], ['dair', 'move', { move: 'dair' }],
+  ['taunt', 'move', { move: 'taunt' }],
+  ['nspec', 'move', { move: 'nspec' }], ['sspec', 'move', { move: 'sspec' }], ['sspec4', 'move', { move: 'sspec4' }], ['uspec', 'move', { move: 'uspec' }], ['dspec', 'move', { move: 'dspec' }], ['dspecHit', 'move', { move: 'dspecHit' }], ['dashAtk', 'move', { move: 'dashAtk' }],
+];
+const qs = new URLSearchParams(location.search);
+const Z = +(qs.get('z') || 1); // ?z=2 pour agrandir les cases
+const ONLY = qs.get('s') ? qs.get('s').split(',') : null; // ?s=idle,fsmash pour ne garder que ces cases
+const chSel = document.getElementById('ch'), palSel = document.getElementById('pal');
+for (const id of G.CHAR_ORDER) chSel.add(new Option(G.CHARS[id].name, id));
+chSel.value = qs.get('c') && G.CHARS[qs.get('c')] ? qs.get('c') : 'tung';
+function fillPal() { palSel.innerHTML = ''; G.CHARS[chSel.value].palettes.forEach((p, i) => palSel.add(new Option(p.name, i))); }
+fillPal(); chSel.onchange = () => { fillPal(); build(); }; palSel.onchange = build;
+let cells = [];
+function build() {
+  const grid = document.getElementById('grid'); grid.innerHTML = ''; cells = [];
+  const list = ONLY ? ONLY.map((n) => STATES.find((st) => st[0].split(' ')[0] === n)).filter(Boolean) : STATES;
+  for (const [label, action, extra] of list) {
+    const d = document.createElement('div'); d.className = 'cell';
+    const cv = document.createElement('canvas'); cv.width = 170 * Z; cv.height = 200 * Z; d.style.width = cv.width + 'px';
+    d.appendChild(cv); const s = document.createElement('span'); s.textContent = label + (qs.get('f') ? ' f' + (qs.get('f').split(',')[cells.length] || qs.get('f').split(',')[0]) : ''); d.appendChild(s); grid.appendChild(d);
+    const f = Object.assign({ char: chSel.value, pal: +palSel.value, action, af: 0, slot: 0, facing: 1, vx: 1.2, vy: 0, v: {}, mv: {}, buf: {}, grounded: true, lag: 10, intang: 0, charge: 0 }, extra || {});
+    const ch = G.CHARS[f.char]; if (ch.init) ch.init(f);
+    cells.push({ cv, f });
+  }
+}
+build();
+let frame = 0;
+function loop() {
+  if (!document.getElementById('pause').checked) frame++;
+  const t = frame / 60;
+  for (const { cv, f } of cells) {
+    const ctx = cv.getContext('2d'), st = G.ST(f), ch = G.CHARS[f.char];
+    if (f.action === 'move') { const M = G.MV(f, f.move); f.af = qs.get('f') ? +(qs.get('f').split(',')[cells.findIndex((c) => c.f === f)] || qs.get('f').split(',')[0]) : M ? frame % (M.len + 20) : 0; }
+    else f.af = frame % 40;
+    const S = { frame, events: [] };
+    const P = G.pose(S, f, t);
+    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, cv.width, cv.height);
+    const sc = 140 * Z / 26;
+    ctx.translate(cv.width / 2 - 10 * Z, cv.height - 22 * Z); ctx.scale(sc, -sc);
+    ctx.translate(0, P.bob || 0);
+    if (P.rot) { const cy = st.h * 0.45; ctx.translate(0, cy); ctx.rotate(-P.rot * Math.PI / 180); ctx.translate(0, -cy); }
+    ch.draw(ctx, P, G.palOf(f), f, S, t);
+    // hitbox actives (après réglage du moteur), dans le repère du perso
+    if (f.action === 'move' && document.getElementById('hb').checked) {
+      const M = G.MV(f, f.move);
+      ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.translate(cv.width / 2 - 10 * Z, cv.height - 22 * Z); ctx.scale(sc, -sc);
+      for (const h of (M && M.hits) || []) if (f.af >= h.f[0] && f.af <= h.f[1] && (!h.cond || h.cond(f, S))) {
+        ctx.fillStyle = h.grab ? 'rgba(80,160,255,0.35)' : 'rgba(255,40,40,0.35)'; ctx.beginPath(); ctx.arc(h.x, h.y, h.r, 0, 7); ctx.fill();
+      }
+    }
+  }
+  requestAnimationFrame(loop);
+}
+loop();
+</script>
+</body>
+</html>
