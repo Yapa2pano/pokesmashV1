@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><title>Visionneuse 3D</title>
+<style>body{margin:0;background:#2a3040;color:#fff;font:13px sans-serif;overflow:hidden}#ui{position:absolute;left:8px;top:8px;max-height:96vh;overflow:auto;background:#0008;padding:6px;width:300px}button{display:block;width:100%;text-align:left;font-size:11px;margin:1px 0}</style>
+<script type="importmap">{"imports":{"three":"../js/vendor/three/three.module.js","three/addons/":"../js/vendor/three/addons/"}}</script>
+</head><body><div id="ui"></div>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+const q = new URLSearchParams(location.search);
+const file = q.get('m') || 'regular_1000';
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setSize(innerWidth, innerHeight); renderer.setPixelRatio(devicePixelRatio);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+document.body.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+const cam = new THREE.PerspectiveCamera(30, innerWidth / innerHeight, 0.01, 1000);
+scene.add(new THREE.HemisphereLight(0xffffff, 0x445566, 1.6));
+const sun = new THREE.DirectionalLight(0xffffff, 2.2); sun.position.set(3, 5, 4); scene.add(sun);
+const dl = new DRACOLoader().setDecoderPath('../js/vendor/three/addons/libs/draco/');
+const loader = new GLTFLoader().setDRACOLoader(dl);
+const clock = new THREE.Clock();
+let mixer, model;
+window.V = { THREE, scene, cam };
+loader.load('../modeles/sources/' + file + '.glb', (g) => {
+  model = g.scene; scene.add(model); window.V.gltf = g; window.V.model = model;
+  model.traverse((o) => { if (o.isMesh && /lod[1-9]|shadow/i.test(o.name)) o.visible = false; });
+  const box = new THREE.Box3().setFromObject(model); const sz = box.getSize(new THREE.Vector3()), c = box.getCenter(new THREE.Vector3());
+  const h = Math.max(sz.x, sz.y, sz.z);
+  cam.position.set(c.x + h * 0.6, c.y + h * 0.2, c.z + h * 2.6); cam.lookAt(c);
+  mixer = new THREE.AnimationMixer(model);
+  const ui = document.getElementById('ui');
+  ui.innerHTML = `<b>${file}</b> size ${sz.x.toFixed(2)} ${sz.y.toFixed(2)} ${sz.z.toFixed(2)}<br>`;
+  g.animations.forEach((a, i) => {
+    const b = document.createElement('button'); b.textContent = a.name.replace(/^.*?\|/, '') + ' ' + a.duration.toFixed(1) + 's';
+    b.onclick = () => { mixer.stopAllAction(); mixer.clipAction(a).play(); }; ui.appendChild(b);
+  });
+  const pick = q.get('a'); const def = g.animations.find((a) => pick ? a.name.includes(pick) : /battlewait01|wait/.test(a.name)) || g.animations[0];
+  if (def) mixer.clipAction(def).play();
+});
+// planche : V.sheet([[motif du clip, [fractions]]...]) -> grille d'images (capture)
+window.V.sheet = (rows, cw = 150) => {
+  const g = window.V.gltf, n = Math.max(...rows.map((r) => r[1].length));
+  let ov = document.getElementById('ov'); if (!ov) { ov = document.createElement('canvas'); ov.id = 'ov'; ov.style.cssText = 'position:fixed;left:0;top:0;z-index:9;background:#2a3040'; document.body.appendChild(ov); }
+  ov.width = n * cw; ov.height = rows.length * cw; const o = ov.getContext('2d'); o.fillStyle = '#2a3040'; o.fillRect(0, 0, ov.width, ov.height);
+  rows.forEach(([pat, ts], r) => {
+    const clip = g.animations.find((a) => a.name.includes(pat)); if (!clip) return;
+    ts.forEach((t, i) => {
+      mixer.stopAllAction(); const a = mixer.clipAction(clip); a.reset().play(); a.time = t * clip.duration; mixer.update(0);
+      renderer.render(scene, cam);
+      const c = renderer.domElement, s = Math.min(c.width, c.height);
+      o.drawImage(c, (c.width - s) / 2, (c.height - s) / 2, s, s, i * cw, r * cw, cw, cw);
+      o.fillStyle = '#fff'; o.font = '11px sans-serif'; o.fillText(pat.slice(-18) + ' ' + t, i * cw + 3, r * cw + 12);
+    });
+  });
+  return ov.width + 'x' + ov.height;
+};
+window.V.side = () => { const b = new THREE.Box3().setFromObject(model); const c = b.getCenter(new THREE.Vector3()), h = b.getSize(new THREE.Vector3()).y; cam.position.set(c.x + h * 2.2, c.y + h * 0.15, c.z + h * 1.3); cam.lookAt(c); };
+(function loop() { requestAnimationFrame(loop); const dt = clock.getDelta(); if (mixer) mixer.update(dt); renderer.render(scene, cam); })();
+</script></body></html>
